@@ -192,3 +192,22 @@ INSERT INTO dbo.RutaParada (IdRuta, IdParada, OrdenParada) VALUES
 (5,5,1),(5,3,2),(5,9,3),(5,7,4),(5,1,5);
 GO
 
+--Creacion de la tabla Sube (api externa)--
+
+IF OBJECT_ID('dbo.Sube','U') IS NOT NULL DROP TABLE dbo.Sube;
+GO
+CREATE TABLE dbo.Sube (
+    IdTicket INT IDENTITY(1,1) PRIMARY KEY,
+    FechaDeTicket DATE NOT NULL,
+    IdColectivo INT NOT NULL FOREIGN KEY REFERENCES dbo.Colectivos(IdColectivo)
+);
+
+-- Todos los viajes simulados para el día 2025-09-13
+INSERT INTO dbo.Sube (FechaDeTicket, IdColectivo)
+SELECT '2025-09-13', IdColectivo
+FROM dbo.Colectivos
+CROSS APPLY (SELECT TOP (CASE IdColectivo
+    WHEN 1 THEN 10 WHEN 2 THEN 8 WHEN 3 THEN 13 WHEN 4 THEN 9
+    WHEN 5 THEN 11 WHEN 6 THEN 7 WHEN 7 THEN 14 WHEN 8 THEN 6
+    WHEN 9 THEN 10 ELSE 9 END) 1 AS n) AS t;
+GO
